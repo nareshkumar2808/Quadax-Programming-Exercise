@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ConsoleApp1
 {
@@ -17,55 +15,65 @@ namespace ConsoleApp1
                 computerGeneratedCombination.Add(random.Next(1, 7));
             }
             Console.WriteLine("Computer Generated Number - XXXX\n");
-            Console.WriteLine(string.Join(";",computerGeneratedCombination));
-
-            Console.WriteLine("Guess the combination - You have 10 attempts\n");
+            
+            Console.WriteLine("Guess the four digit number combination - You have 10 attempts\n");
             for (int i = 0; i < 10; i++)
             {
                 Console.WriteLine("Attempt - {0}\n", i + 1);
                 String userInput = Console.ReadLine();
-                List<char> userChar = new List<char>();
-                userChar.AddRange(userInput);
-                List<int> userCombination = userChar.ConvertAll(n => int.Parse(n.ToString()));
 
-                int plusResult = 0;
-                int minusResult = 0;
+                List<int> userCombination = userInput.ToCharArray()
+                    .Where(n => char.IsNumber(n))
+                    .Select(n => int.Parse(n.ToString()))
+                    .ToList();
 
-                for (int j = 0; j < userCombination.Count; j++)
+
+                if (userCombination.Count != 4)
                 {
-                    if (computerGeneratedCombination.Contains(userCombination[j]))
+                    Console.WriteLine("\nInvalid input. Please enter four digit number only !!!!\n");
+                }
+                else
+                {
+                    int plusResult = 0;
+                    int minusResult = 0;
+
+                    for (int j = 0; j < userCombination.Count; j++)
                     {
-                        if (j < 4 && computerGeneratedCombination[j] == userCombination[j])
+                        if (computerGeneratedCombination.Contains(userCombination[j]))
                         {
-                            plusResult++;
-                        }
-                        else
-                        {
-                            minusResult++;
+                            if (computerGeneratedCombination[j] == userCombination[j])
+                            {
+                                plusResult++;
+                            }
+                            else
+                            {
+                                minusResult++;
+                            }
                         }
                     }
+                    while (plusResult > 0)
+                    {
+                        Console.Write("+");
+                        plusResult--;
+                    }
+                    while (minusResult > 0)
+                    {
+                        Console.Write("-");
+                        minusResult--;
+                    }
+                    if (computerGeneratedCombination.SequenceEqual(userCombination))
+                    {
+                        Console.WriteLine("\nYou Won!!!!\n");
+                        break;
+                    }
+                
+                    Console.WriteLine("\nTry Again\n");
                 }
-                while (plusResult > 0)
-                {
-                    Console.Write("+");
-                    plusResult--;
-                }
-                while (minusResult > 0)
-                {
-                    Console.Write("-");
-                    minusResult--;
-                }
-                if (computerGeneratedCombination.SequenceEqual(userCombination))
-                {
-                    Console.WriteLine("\nYou Won!!!!\n");
-                    break;
-                }
-                if (i == 9)
+                if (i == 9) // If user reach here and the attempts are 10. User should not be allowed to continue
                 {
                     Console.WriteLine("\nYou Lost!!!!\n");
                     break;
                 }
-                Console.WriteLine("\nTry Again\n");
             }
             Console.Read();
         }
